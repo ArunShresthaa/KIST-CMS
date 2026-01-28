@@ -16,5 +16,10 @@ class Patient extends Model
         'sex',
         'department',
         'remarks',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 }
