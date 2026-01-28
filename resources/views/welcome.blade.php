@@ -23,10 +23,10 @@
         <!-- Header -->
         <header class="mb-6 text-center">
             <div class="flex items-center justify-center gap-3">
-                <img src="{{ asset('images/logo.png') }}" alt="KIST Medical College Logo" class="w-12 h-12 object-contain">
-                <div class="text-left">
-                    <h1 class="text-2xl font-bold text-primary">KIST Medical College</h1>
-                    <p class="text-sm text-gray-500">and Teaching Hospital</p>
+                <img src="{{ asset('images/logo.png') }}" alt="KIST Medical College Logo" class="w-20 h-20 object-contain">
+                <div class="text-center">
+                    <h1 class="text-2xl font-bold text-primary">KIST Medical College and Teaching Hospital</h1>
+                    <p class="text-sm text-gray-500 mt-1">Estd. 2006</p>
                 </div>
             </div>
         </header>
@@ -40,7 +40,7 @@
             <div class="overflow-x-auto">
                 <table class="min-w-full">
                     <thead>
-                        <tr class="border-b border-gray-200">
+                        <tr class="bg-gray-100 border-b border-gray-200">
                             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">S.N</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Bed No</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Patient Identification</th>
@@ -51,7 +51,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse($patients as $index => $patient)
-                            <tr class="hover:bg-gray-50">
+                            <tr class="{{ $index % 2 === 0 ? 'bg-white' : 'bg-gray-50' }} hover:bg-gray-100">
                                 <td class="px-6 py-4 text-sm text-primary font-medium">{{ $index + 1 }}</td>
                                 <td class="px-6 py-4 text-sm text-blue-600">{{ $patient->bed_no }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-600">{{ $patient->patient_identification }}</td>
