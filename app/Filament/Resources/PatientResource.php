@@ -1,0 +1,116 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\PatientResource\Pages;
+use App\Models\Patient;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class PatientResource extends Resource
+{
+    protected static ?string $model = Patient::class;
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                TextInput::make('bed_no')
+                    ->label('Bed No')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('patient_identification')
+                    ->label('Patient Identification')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('age')
+                    ->label('Age')
+                    ->required()
+                    ->numeric()
+                    ->minValue(0)
+                    ->maxValue(150),
+                Select::make('sex')
+                    ->label('Sex')
+                    ->options([
+                        'Male' => 'Male',
+                        'Female' => 'Female',
+                        'Other' => 'Other',
+                    ])
+                    ->required(),
+                TextInput::make('department')
+                    ->label('Department')
+                    ->required()
+                    ->maxLength(255),
+                Textarea::make('remarks')
+                    ->label('Remarks')
+                    ->maxLength(65535)
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('id')
+                    ->label('S.N')
+                    ->sortable(),
+                TextColumn::make('bed_no')
+                    ->label('Bed No')
+                    ->searchable(),
+                TextColumn::make('patient_identification')
+                    ->label('Patient Identification')
+                    ->searchable(),
+                TextColumn::make('age_sex')
+                    ->label('Age/Sex')
+                    ->getStateUsing(fn (Patient $record): string => $record->age.'/'.$record->sex),
+                TextColumn::make('department')
+                    ->label('Department')
+                    ->searchable(),
+                TextColumn::make('remarks')
+                    ->label('Remarks')
+                    ->limit(50),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                EditAction::make(),
+                DeleteAction::make(),
+            ])
+            ->bulkActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListPatients::route('/'),
+        ];
+    }
+}
