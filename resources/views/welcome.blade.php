@@ -20,8 +20,13 @@
         }
     </script>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <div class="max-w-6xl mx-auto px-4 py-8">
+<body class="bg-gray-50 min-h-screen relative">
+    <!-- Blurred Logo Background -->
+    <div class="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
+        <img src="{{ asset('images/background_logo.png') }}" alt="" class="w-[500px] h-[500px] object-contain opacity-10 blur-sm">
+    </div>
+    
+    <div class="max-w-6xl mx-auto px-4 py-8 relative z-10">
         <!-- Header -->
         <header class="mb-6 text-center">
             <div class="flex items-center justify-center gap-3">
