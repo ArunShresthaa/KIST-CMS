@@ -28,11 +28,15 @@ class PatientResource extends Resource
         return $schema
             ->components([
                 TextInput::make('bed_no')
-                    ->label('Bed No')
+                    ->label('Bed No.')
                     ->required()
                     ->maxLength(255),
-                TextInput::make('patient_identification')
-                    ->label('Patient Identification')
+                TextInput::make('hos_no')
+                    ->label('Hos. No.')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('patient_name')
+                    ->label('Patient Name')
                     ->required()
                     ->maxLength(255),
                 TextInput::make('age')
@@ -68,14 +72,20 @@ class PatientResource extends Resource
                     ->label('S.N')
                     ->sortable(),
                 TextColumn::make('bed_no')
-                    ->label('Bed No')
+                    ->label('Bed No.')
                     ->searchable(),
-                TextColumn::make('patient_identification')
-                    ->label('Patient Identification')
+                TextColumn::make('hos_no')
+                    ->label('Hos. No.')
                     ->searchable(),
-                TextColumn::make('age_sex')
-                    ->label('Age/Sex')
-                    ->getStateUsing(fn (Patient $record): string => $record->age.'/'.$record->sex),
+                TextColumn::make('patient_name')
+                    ->label('Patient Name')
+                    ->searchable(),
+                TextColumn::make('age')
+                    ->label('Age')
+                    ->sortable(),
+                TextColumn::make('sex')
+                    ->label('Sex')
+                    ->searchable(),
                 TextColumn::make('department')
                     ->label('Department')
                     ->searchable(),

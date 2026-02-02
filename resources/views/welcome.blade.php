@@ -44,9 +44,11 @@
                     <thead>
                         <tr class="bg-gray-100 border-b border-gray-200">
                             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">S.N</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Bed No</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Patient Identification</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Age/Sex</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Bed No.</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Hos. No.</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Patient Name</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Age</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Sex</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Department</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Remarks</th>
                         </tr>
@@ -56,8 +58,10 @@
                             <tr class="{{ $index % 2 === 0 ? 'bg-white' : 'bg-gray-50' }} hover:bg-gray-100">
                                 <td class="px-6 py-4 text-sm text-primary font-medium">{{ $index + 1 }}</td>
                                 <td class="px-6 py-4 text-sm text-blue-600">{{ $patient->bed_no }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">{{ $patient->patient_identification }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">{{ $patient->age }}/{{ substr($patient->sex, 0, 1) }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-600">{{ $patient->hos_no }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-600">{{ $patient->patient_name }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-600">{{ $patient->age }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-600">{{ $patient->sex }}</td>
                                 <td class="px-6 py-4">
                                     @php
                                         $colors = [
@@ -79,7 +83,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                                <td colspan="8" class="px-6 py-12 text-center text-gray-500">
                                     <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                                     </svg>
