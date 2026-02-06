@@ -42,9 +42,9 @@ class PatientResource extends Resource
                 TextInput::make('age')
                     ->label('Age')
                     ->required()
-                    ->numeric()
-                    ->minValue(0)
-                    ->maxValue(150),
+                    ->maxLength(20)
+                    ->placeholder('e.g., 5D, 3M, 25Y')
+                    ->helperText('Use D for days, M for months, Y for years'),
                 Select::make('sex')
                     ->label('Sex')
                     ->options([
