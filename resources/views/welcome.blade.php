@@ -15,7 +15,7 @@
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-    <div class="w-[80%] mx-auto py-6">
+    <div class="w-[80%] mx-auto pt-12 pb-6">
         <!-- Header -->
         <header class="flex items-center justify-between mb-8">
             <!-- Left Logo -->
