@@ -16,15 +16,17 @@
     <div class="max-w-6xl mx-auto px-4 py-6">
         <!-- Header -->
         <header class="flex items-center justify-between mb-8">
-            <div class="flex items-center gap-4">
-                <!-- Logo -->
-                <img src="{{ asset('images/logo.png') }}" alt="KIST Medical College Logo" class="w-14 h-14 object-contain">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">KIST Medical College and Teaching Hospital</h1>
-                <p class="text-sm font-semibold text-gray-700">Est. 2006</p>
-                </div>
+            <!-- Left Logo -->
+            <div class="flex-shrink-0">
+                <img src="{{ asset('images/logo.png') }}" alt="KIST Medical College Logo" class="w-20 h-14 object-contain">
             </div>
-            <div class="text-right">
+            <!-- Center Text -->
+            <div class="text-center flex-1 px-4">
+                <h1 class="text-2xl font-bold text-gray-800">KIST Medical College and Teaching Hospital</h1>
+                <p class="text-sm font-semibold text-gray-700">Est. 2006</p>
+            </div>
+            <!-- Right Logo -->
+            <div class="flex-shrink-0">
                 <img src="{{ asset('images/nabh_accredited.png') }}" alt="NABH Accredited" class="h-14 object-contain">
             </div>
         </header>
