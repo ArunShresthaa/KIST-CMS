@@ -83,7 +83,7 @@
                     <!-- Page dots -->
                     <div id="pageDots" class="flex items-center gap-1.5"></div>
                 </div>
-                <p>Last updated: {{ now()->format('d/m/Y, H:i:s') }}</p>
+                <p>Last updated: {{ now()->format('Y/m/d, h:i:s A') }}</p>
             </div>
         </div>
     </div>
