@@ -8,6 +8,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -57,6 +58,10 @@ class PatientResource extends Resource
                     ->label('Department')
                     ->required()
                     ->maxLength(255),
+                DatePicker::make('admitted_date')
+                    ->label('Admitted Date')
+                    ->required()
+                    ->native(false),
                 Textarea::make('remarks')
                     ->label('Remarks')
                     ->maxLength(65535)
@@ -89,6 +94,10 @@ class PatientResource extends Resource
                 TextColumn::make('department')
                     ->label('Department')
                     ->searchable(),
+                TextColumn::make('admitted_date')
+                    ->label('Admitted Date')
+                    ->date()
+                    ->sortable(),
                 TextColumn::make('remarks')
                     ->label('Remarks')
                     ->limit(50),

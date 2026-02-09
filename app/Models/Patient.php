@@ -16,11 +16,13 @@ class Patient extends Model
         'age',
         'sex',
         'department',
+        'admitted_date',
         'remarks',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'admitted_date' => 'date',
     ];
 }

@@ -53,7 +53,8 @@
                             <th class="px-6 py-4 text-left text-sm font-semibold text-indigo-600">Age</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-indigo-600">Sex</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-indigo-600">Department</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-indigo-600">Notes</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-indigo-600">Admitted Date</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-indigo-600">Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -109,11 +110,12 @@
                                         {{ $deptShort }}
                                     </span>
                                 </td>
+                                <td class="px-6 py-4 text-sm text-gray-600">{{ $patient->admitted_date ? $patient->admitted_date->format('Y/m/d') : '-' }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-400">{{ $patient->remarks ?? '-' }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-12 text-center text-gray-500">
+                                <td colspan="9" class="px-6 py-12 text-center text-gray-500">
                                     <svg class="mx-auto h-12 w-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                                     </svg>
