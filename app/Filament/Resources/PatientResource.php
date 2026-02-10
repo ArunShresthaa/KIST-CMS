@@ -9,7 +9,6 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -62,10 +61,13 @@ class PatientResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required(),
-                DatePicker::make('admitted_date')
+                TextInput::make('admitted_date')
                     ->label('Admitted Date')
                     ->required()
-                    ->native(false),
+                    ->extraInputAttributes([
+                        'class' => 'nepali-datepicker',
+                        'autocomplete' => 'off',
+                    ]),
                 Textarea::make('remarks')
                     ->label('Remarks')
                     ->maxLength(65535)
