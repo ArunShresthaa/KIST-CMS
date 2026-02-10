@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PatientResource\Pages;
+use App\Models\Department;
 use App\Models\Patient;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -54,10 +55,13 @@ class PatientResource extends Resource
                         'Other' => 'Other',
                     ])
                     ->required(),
-                TextInput::make('department')
+                Select::make('department_id')
                     ->label('Department')
-                    ->required()
-                    ->maxLength(255),
+                    ->relationship('department', 'name')
+                    ->options(Department::pluck('name', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 DatePicker::make('admitted_date')
                     ->label('Admitted Date')
                     ->required()
@@ -91,7 +95,7 @@ class PatientResource extends Resource
                 TextColumn::make('sex')
                     ->label('Sex')
                     ->searchable(),
-                TextColumn::make('department')
+                TextColumn::make('department.name')
                     ->label('Department')
                     ->searchable(),
                 TextColumn::make('admitted_date')

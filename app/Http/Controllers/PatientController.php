@@ -9,7 +9,7 @@ class PatientController extends Controller
 {
     public function index()
     {
-        $patients = Patient::where('is_active', true)->get();
+        $patients = Patient::with('department')->where('is_active', true)->get();
         return view('welcome', compact('patients'));
     }
 }

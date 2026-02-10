@@ -90,32 +90,14 @@
 
     @php
         $patientsData = $patients->map(function($patient) {
-            $dept = strtoupper($patient->department ?? '');
-            $deptShort = match(true) {
-                str_contains($dept, 'GYNAE') || str_contains($dept, 'GYNECOLOGY') || str_contains($dept, 'OBSTETRICS') => 'GYNAE',
-                str_contains($dept, 'MEDI') || $dept === 'MED' => 'MED',
-                str_contains($dept, 'PEDIA') || str_contains($dept, 'PEDIATRIC') => 'PEDIA',
-                str_contains($dept, 'CARDIO') || str_contains($dept, 'CARDIOLOGY') => 'CARDIO',
-                str_contains($dept, 'ORTHO') => 'ORTHO',
-                str_contains($dept, 'NEURO') => 'NEURO',
-                str_contains($dept, 'SURG') => 'SURG',
-                str_contains($dept, 'ENT') => 'ENT',
-                str_contains($dept, 'OPHTHAL') || str_contains($dept, 'EYE') => 'OPHTH',
-                str_contains($dept, 'DERMA') => 'DERMA',
-                str_contains($dept, 'PSYCH') => 'PSYCH',
-                str_contains($dept, 'PULMO') => 'PULMO',
-                str_contains($dept, 'GASTRO') => 'GASTRO',
-                str_contains($dept, 'NEPHRO') || str_contains($dept, 'KIDNEY') => 'NEPHRO',
-                str_contains($dept, 'URO') => 'URO',
-                default => $patient->department ?? '-'
-            };
             return [
                 'bed_no' => $patient->bed_no,
                 'hos_no' => $patient->hos_no,
                 'patient_name' => $patient->patient_name,
                 'age' => $patient->age,
                 'sex' => $patient->sex,
-                'department' => $deptShort,
+                'department' => $patient->department?->name ?? '-',
+                'department_color' => $patient->department?->color ?? '#6b7280',
                 'admitted_date' => $patient->admitted_date ? $patient->admitted_date->format('Y/m/d') : '-',
                 'remarks' => $patient->remarks ?? '-'
             ];
@@ -138,24 +120,30 @@
         let autoScrollTimer = null;
         let progressValue = 0;
 
-        // Department color mapping
-        const deptColors = {
-            'GYNAE': 'bg-emerald-100 text-emerald-700',
-            'MED': 'bg-emerald-100 text-emerald-700',
-            'PEDIA': 'bg-pink-100 text-pink-700',
-            'CARDIO': 'bg-gray-700 text-white',
-            'ORTHO': 'bg-blue-100 text-blue-700',
-            'NEURO': 'bg-purple-100 text-purple-700',
-            'SURG': 'bg-red-100 text-red-700',
-            'ENT': 'bg-amber-100 text-amber-700',
-            'OPHTH': 'bg-cyan-100 text-cyan-700',
-            'DERMA': 'bg-orange-100 text-orange-700',
-            'PSYCH': 'bg-indigo-100 text-indigo-700',
-            'PULMO': 'bg-teal-100 text-teal-700',
-            'GASTRO': 'bg-yellow-100 text-yellow-700',
-            'NEPHRO': 'bg-rose-100 text-rose-700',
-            'URO': 'bg-lime-100 text-lime-700',
-        };
+        // Helper function to determine if color is dark (for text contrast)
+        function isColorDark(hexColor) {
+            const hex = hexColor.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            // Calculate luminance
+            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            return luminance < 0.5;
+        }
+
+        // Helper function to lighten a color for background
+        function lightenColor(hexColor, percent = 85) {
+            const hex = hexColor.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            
+            const newR = Math.round(r + (255 - r) * (percent / 100));
+            const newG = Math.round(g + (255 - g) * (percent / 100));
+            const newB = Math.round(b + (255 - b) * (percent / 100));
+            
+            return `rgb(${newR}, ${newG}, ${newB})`;
+        }
 
         // Render the patient table for the current page
         function renderPage() {
@@ -181,7 +169,8 @@
 
             tbody.innerHTML = pagePatients.map((patient, index) => {
                 const globalIndex = startIndex + index + 1;
-                const badgeColor = deptColors[patient.department] || 'bg-gray-100 text-gray-700';
+                const bgColor = lightenColor(patient.department_color);
+                const textColor = patient.department_color;
                 return `
                     <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                         <td class="px-6 py-4 text-sm text-gray-700">${globalIndex}</td>
@@ -191,7 +180,7 @@
                         <td class="px-6 py-4 text-sm text-gray-600">${patient.age || '-'}</td>
                         <td class="px-6 py-4 text-sm text-gray-600">${patient.sex || '-'}</td>
                         <td class="px-6 py-4">
-                            <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-md ${badgeColor}">
+                            <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-md" style="background-color: ${bgColor}; color: ${textColor};">
                                 ${patient.department}
                             </span>
                         </td>
