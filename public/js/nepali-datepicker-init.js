@@ -39,13 +39,11 @@
                     ndpYearCount: 20,
                     dateFormat: 'YYYY-MM-DD',
                     onChange: function (dateObj) {
-                        console.log('Date selected via onChange:', dateObj);
                         syncDateToInput(inputId, dateObj.bs);
                     }
                 });
 
                 input.dataset.ndpInitialized = 'true';
-                console.log('Nepali DatePicker initialized on:', inputId);
             } catch (error) {
                 console.error('Nepali DatePicker init failed:', error);
             }
@@ -58,12 +56,8 @@
             const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
             nativeInputValueSetter.call(targetInput, dateValue);
 
-            console.log('Input value set to:', dateValue);
-
             targetInput.dispatchEvent(new Event('input', { bubbles: true }));
             targetInput.dispatchEvent(new Event('change', { bubbles: true }));
-
-            console.log('Events dispatched for:', inputId);
         }
     }
 
@@ -86,7 +80,6 @@
                 const dateLink = target.closest('a[data-value]');
                 if (dateLink && !dateLink.classList.contains('ndp-disabled')) {
                     const dateValue = dateLink.getAttribute('data-value');
-                    console.log('Date mousedown:', dateValue);
 
                     e.preventDefault();
                     e.stopPropagation();
