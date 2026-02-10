@@ -61,7 +61,7 @@ class PatientResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required(),
-                TextInput::make('admitted_date')
+                TextInput::make('admitted_date_bs')
                     ->label('Admitted Date')
                     ->required()
                     ->extraInputAttributes([
@@ -100,9 +100,8 @@ class PatientResource extends Resource
                 TextColumn::make('department.name')
                     ->label('Department')
                     ->searchable(),
-                TextColumn::make('admitted_date')
+                TextColumn::make('admitted_date_bs')
                     ->label('Admitted Date')
-                    ->date()
                     ->sortable(),
                 TextColumn::make('remarks')
                     ->label('Remarks')

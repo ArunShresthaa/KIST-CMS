@@ -17,14 +17,13 @@ class Patient extends Model
         'age',
         'sex',
         'department_id',
-        'admitted_date',
+        'admitted_date_bs',
         'remarks',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'admitted_date' => 'date',
     ];
 
     public function department(): BelongsTo

@@ -98,7 +98,7 @@
                 'sex' => $patient->sex,
                 'department' => $patient->department?->name ?? '-',
                 'department_color' => $patient->department?->color ?? '#6b7280',
-                'admitted_date' => $patient->admitted_date ? $patient->admitted_date->format('Y/m/d') : '-',
+                'admitted_date' => $patient->admitted_date_bs ?? '-',
                 'remarks' => $patient->remarks ?? '-'
             ];
         })->values();
