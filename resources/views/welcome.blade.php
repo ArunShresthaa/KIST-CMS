@@ -109,27 +109,23 @@
         const patients = @json($patientsData);
 
         // Pagination configuration
-        const PATIENTS_PER_PAGE = 10;
+        const PATIENTS_PER_PAGE = 8;
         const AUTO_SCROLL_INTERVAL = 15000; // 15 seconds
-        const PROGRESS_UPDATE_INTERVAL = 100; // Update progress bar every 100ms
 
         // State
         let currentPage = 1;
-        let totalPages = Math.max(1, Math.ceil(patients.length / PATIENTS_PER_PAGE));
-        let progressTimer = null;
+        const totalPages = Math.max(1, Math.ceil(patients.length / PATIENTS_PER_PAGE));
         let autoScrollTimer = null;
-        let progressValue = 0;
+        let animationFrameId = null;
+        let progressStartTime = null;
 
-        // Helper function to determine if color is dark (for text contrast)
-        function isColorDark(hexColor) {
-            const hex = hexColor.replace('#', '');
-            const r = parseInt(hex.substr(0, 2), 16);
-            const g = parseInt(hex.substr(2, 2), 16);
-            const b = parseInt(hex.substr(4, 2), 16);
-            // Calculate luminance
-            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-            return luminance < 0.5;
-        }
+        // Cached DOM references
+        let progressBarEl = null;
+        let tbodyEl = null;
+        let currentPageEl = null;
+        let totalPagesEl = null;
+        let showingRangeEl = null;
+        let pageDotsEl = null;
 
         // Helper function to lighten a color for background
         function lightenColor(hexColor, percent = 85) {
@@ -137,23 +133,22 @@
             const r = parseInt(hex.substr(0, 2), 16);
             const g = parseInt(hex.substr(2, 2), 16);
             const b = parseInt(hex.substr(4, 2), 16);
-            
+
             const newR = Math.round(r + (255 - r) * (percent / 100));
             const newG = Math.round(g + (255 - g) * (percent / 100));
             const newB = Math.round(b + (255 - b) * (percent / 100));
-            
+
             return `rgb(${newR}, ${newG}, ${newB})`;
         }
 
         // Render the patient table for the current page
         function renderPage() {
-            const tbody = document.getElementById('patientTableBody');
             const startIndex = (currentPage - 1) * PATIENTS_PER_PAGE;
             const endIndex = Math.min(startIndex + PATIENTS_PER_PAGE, patients.length);
             const pagePatients = patients.slice(startIndex, endIndex);
 
             if (pagePatients.length === 0) {
-                tbody.innerHTML = `
+                tbodyEl.innerHTML = `
                     <tr>
                         <td colspan="9" class="px-6 py-12 text-center text-gray-500">
                             <svg class="mx-auto h-12 w-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,7 +162,7 @@
                 return;
             }
 
-            tbody.innerHTML = pagePatients.map((patient, index) => {
+            tbodyEl.innerHTML = pagePatients.map((patient, index) => {
                 const globalIndex = startIndex + index + 1;
                 const bgColor = lightenColor(patient.department_color);
                 const textColor = patient.department_color;
@@ -191,9 +186,9 @@
             }).join('');
 
             // Update page indicators
-            document.getElementById('currentPage').textContent = currentPage;
-            document.getElementById('totalPages').textContent = totalPages;
-            document.getElementById('showingRange').textContent = `${startIndex + 1}-${endIndex}`;
+            currentPageEl.textContent = currentPage;
+            totalPagesEl.textContent = totalPages;
+            showingRangeEl.textContent = `${startIndex + 1}-${endIndex}`;
 
             // Update page dots
             updatePageDots();
@@ -201,57 +196,78 @@
 
         // Update page dots indicator
         function updatePageDots() {
-            const dotsContainer = document.getElementById('pageDots');
-            dotsContainer.innerHTML = '';
-            
+            pageDotsEl.innerHTML = '';
+
             for (let i = 1; i <= totalPages; i++) {
                 const dot = document.createElement('div');
                 dot.className = `page-indicator w-2 h-2 rounded-full transition-all ${i === currentPage ? 'bg-indigo-600 active' : 'bg-gray-300'}`;
-                dotsContainer.appendChild(dot);
+                pageDotsEl.appendChild(dot);
             }
         }
 
-        // Update progress bar
-        function updateProgressBar() {
-            progressValue += (PROGRESS_UPDATE_INTERVAL / AUTO_SCROLL_INTERVAL) * 100;
-            document.getElementById('progressBar').style.width = `${Math.min(progressValue, 100)}%`;
+        // Animate progress bar using requestAnimationFrame (no setInterval leak)
+        function animateProgress(timestamp) {
+            if (!progressStartTime) progressStartTime = timestamp;
+            const elapsed = timestamp - progressStartTime;
+            const progress = Math.min((elapsed / AUTO_SCROLL_INTERVAL) * 100, 100);
+            progressBarEl.style.width = progress + '%';
+
+            if (progress < 100) {
+                animationFrameId = requestAnimationFrame(animateProgress);
+            }
+            // Stop requesting frames once progress reaches 100%
         }
 
         // Go to next page or reload
         function nextPage() {
+            stopTimers();
             if (currentPage >= totalPages) {
                 // All pages viewed, reload for updated data
                 window.location.reload();
             } else {
                 currentPage++;
                 renderPage();
-                resetProgress();
+                startAutoScroll();
             }
         }
 
-        // Reset progress bar and timer
-        function resetProgress() {
-            progressValue = 0;
-            document.getElementById('progressBar').style.width = '0%';
+        // Stop all timers and animation frames
+        function stopTimers() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            if (autoScrollTimer) {
+                clearTimeout(autoScrollTimer);
+                autoScrollTimer = null;
+            }
+            progressStartTime = null;
         }
 
         // Start auto-scroll
         function startAutoScroll() {
-            // Clear existing timers
-            if (progressTimer) clearInterval(progressTimer);
-            if (autoScrollTimer) clearInterval(autoScrollTimer);
+            stopTimers();
 
-            // Start progress bar updates
-            progressTimer = setInterval(updateProgressBar, PROGRESS_UPDATE_INTERVAL);
+            // Reset progress bar
+            progressBarEl.style.width = '0%';
 
-            // Auto-scroll to next page
-            autoScrollTimer = setInterval(() => {
-                nextPage();
-            }, AUTO_SCROLL_INTERVAL);
+            // Start progress bar animation via requestAnimationFrame
+            animationFrameId = requestAnimationFrame(animateProgress);
+
+            // Schedule next page with setTimeout (single fire, no stacking)
+            autoScrollTimer = setTimeout(nextPage, AUTO_SCROLL_INTERVAL);
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            // Cache DOM references once
+            progressBarEl = document.getElementById('progressBar');
+            tbodyEl = document.getElementById('patientTableBody');
+            currentPageEl = document.getElementById('currentPage');
+            totalPagesEl = document.getElementById('totalPages');
+            showingRangeEl = document.getElementById('showingRange');
+            pageDotsEl = document.getElementById('pageDots');
+
             renderPage();
             startAutoScroll();
         });
