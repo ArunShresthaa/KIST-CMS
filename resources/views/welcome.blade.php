@@ -39,7 +39,7 @@
             <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 px-6 py-5 flex items-center justify-between">
                 <h2 class="text-xl font-semibold text-white">Current Patient List</h2>
                 <div class="flex items-center gap-4">
-                    <span class="bg-white text-indigo-700 text-sm font-medium px-4 py-1.5 rounded-full">
+                    <span id="patientCount" class="bg-white text-indigo-700 text-sm font-medium px-4 py-1.5 rounded-full">
                         {{ $patients->count() }} patients
                     </span>
                     <!-- Page indicator -->
@@ -79,11 +79,11 @@
             <!-- Footer -->
             <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
                 <div class="flex items-center gap-4">
-                    <p>Showing <span id="showingRange" class="text-indigo-600 font-medium">1-10</span> of <span class="text-indigo-600 font-medium">{{ $patients->count() }}</span> patients</p>
+                    <p>Showing <span id="showingRange" class="text-indigo-600 font-medium">1-8</span> of <span id="totalCount" class="text-indigo-600 font-medium">{{ $patients->count() }}</span> patients</p>
                     <!-- Page dots -->
                     <div id="pageDots" class="flex items-center gap-1.5"></div>
                 </div>
-                <p>Last updated: {{ now()->format('Y/m/d, h:i:s A') }}</p>
+                <p>Last updated: <span id="lastUpdated">{{ now()->format('Y/m/d, h:i:s A') }}</span></p>
             </div>
         </div>
     </div>
@@ -105,8 +105,8 @@
     @endphp
 
     <script>
-        // Patient data from server
-        const patients = @json($patientsData);
+        // Patient data from server (mutable — refreshed via AJAX)
+        let patients = @json($patientsData);
 
         // Pagination configuration
         const PATIENTS_PER_PAGE = 8;
@@ -114,7 +114,7 @@
 
         // State
         let currentPage = 1;
-        const totalPages = Math.max(1, Math.ceil(patients.length / PATIENTS_PER_PAGE));
+        let totalPages = Math.max(1, Math.ceil(patients.length / PATIENTS_PER_PAGE));
         let autoScrollTimer = null;
         let animationFrameId = null;
         let progressStartTime = null;
@@ -126,6 +126,9 @@
         let totalPagesEl = null;
         let showingRangeEl = null;
         let pageDotsEl = null;
+        let patientCountEl = null;
+        let totalCountEl = null;
+        let lastUpdatedEl = null;
 
         // Helper function to lighten a color for background
         function lightenColor(hexColor, percent = 85) {
@@ -218,12 +221,38 @@
             // Stop requesting frames once progress reaches 100%
         }
 
-        // Go to next page or reload
+        // Fetch fresh patient data via AJAX (no full page reload)
+        function refreshData() {
+            return fetch('/api/patients')
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    patients = data.patients;
+                    totalPages = Math.max(1, Math.ceil(patients.length / PATIENTS_PER_PAGE));
+                    currentPage = 1;
+
+                    // Update dynamic header elements
+                    patientCountEl.textContent = data.count + ' patients';
+                    totalCountEl.textContent = data.count;
+                    lastUpdatedEl.textContent = data.updated_at;
+
+                    renderPage();
+                })
+                .catch(function(err) {
+                    console.error('Failed to refresh patient data:', err);
+                    // On error, just loop back to page 1 with existing data
+                    currentPage = 1;
+                    renderPage();
+                });
+        }
+
+        // Go to next page or refresh data via AJAX
         function nextPage() {
             stopTimers();
             if (currentPage >= totalPages) {
-                // All pages viewed, reload for updated data
-                window.location.reload();
+                // All pages viewed — fetch fresh data without reloading the page
+                refreshData().then(function() {
+                    startAutoScroll();
+                });
             } else {
                 currentPage++;
                 renderPage();
@@ -267,6 +296,9 @@
             totalPagesEl = document.getElementById('totalPages');
             showingRangeEl = document.getElementById('showingRange');
             pageDotsEl = document.getElementById('pageDots');
+            patientCountEl = document.getElementById('patientCount');
+            totalCountEl = document.getElementById('totalCount');
+            lastUpdatedEl = document.getElementById('lastUpdated');
 
             renderPage();
             startAutoScroll();
